@@ -1,0 +1,16 @@
+{
+  "name": "Metis",
+  "version": "1.0.0",
+  "description": "## Objectif - Formulaire d’inscription avec **validation AJAX** (endpoint JSON) + **soumission finale** (POST classique). - **Une seule source de vérité** des règles de validation côté serveur (`app/services/Validator.php`).",
+  "main": "index.js",
+  "scripts": {
+  "dev": "vite",
+  "build": "vite build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^7.3.1"
+  }
+}

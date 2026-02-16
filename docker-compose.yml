@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: takalo_php
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=192.168.88.11
+      - DB_NAME=takalo_takalo
+      - DB_USER=root
+      - DB_PASS=
+      - DB_CHARSET=utf8mb4
