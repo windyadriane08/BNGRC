@@ -1,6 +1,6 @@
 {
   "require": {
-    "flight/flight": "^2.0"
+    "mikecao/flight": "^2.0"
   },
   "autoload": {
     "classmap": [

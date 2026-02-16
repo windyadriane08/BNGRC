@@ -1,16 +1,38 @@
-version: '3.8'
-
 services:
+  db:
+    image: mysql:8.0
+    container_name: bngrc_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bngrc
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/1.sql:/docker-entrypoint-initdb.d/1.sql
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
   web:
     build: .
-    container_name: takalo_php
+    container_name: bngrc_php
     ports:
       - "8000:8000"
     volumes:
       - .:/app
     environment:
-      - DB_HOST=192.168.88.11
-      - DB_NAME=takalo_takalo
+      - DB_HOST=db
+      - DB_NAME=bngrc
       - DB_USER=root
-      - DB_PASS=
+      - DB_PASS=root
       - DB_CHARSET=utf8mb4
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
