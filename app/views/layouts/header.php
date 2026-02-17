@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BNGRC</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/css/style.css">
 </head>
 <body>
 
@@ -12,17 +12,17 @@
     <nav class="sidebar">
         <div class="sidebar-header">
             <div class="brand">
-                <img src="/css/bngrc.png" alt="BNGRC" onerror="this.style.visibility='hidden'">
+                <img src="<?= BASE_URL ?>/css/bngrc.png" alt="BNGRC" onerror="this.style.visibility='hidden'">
                 <h1>BNGRC</h1>
             </div>
         </div>
-        <a href="/">Accueil</a>
-        <a href="/villes">Villes</a>
-        <a href="/besoins">Besoins</a>
-        <a href="/dons">Dons</a>
-        <a href="/achats">Achats</a>
-        <a href="/dispatch">Dispatch</a>
-        <a href="/recap">Récap</a>
+        <a href="<?= BASE_URL ?>/">Accueil</a>
+        <a href="<?= BASE_URL ?>/villes">Villes</a>
+        <a href="<?= BASE_URL ?>/besoins">Besoins</a>
+        <a href="<?= BASE_URL ?>/dons">Dons</a>
+        <a href="<?= BASE_URL ?>/achats">Achats</a>
+        <a href="<?= BASE_URL ?>/dispatch">Dispatch</a>
+        <a href="<?= BASE_URL ?>/recap">Récap</a>
     </nav>
 
     <main class="content">

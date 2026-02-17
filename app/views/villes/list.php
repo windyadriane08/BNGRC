@@ -3,7 +3,7 @@
 <div class="card">
     <div class="flex-between">
         <h2>Liste des Villes Sinistrées</h2>
-        <a href="/villes/create" class="btn btn-primary">+ Nouvelle Ville</a>
+        <a href="<?= BASE_URL ?>/villes/create" class="btn btn-primary">+ Nouvelle Ville</a>
     </div>
     
     <?php if (count($villes) > 0): ?>
@@ -25,7 +25,7 @@
                         <td><?= htmlspecialchars($ville['region'] ?? '-') ?></td>
                         <td><?= date('d/m/Y', strtotime($ville['created_at'] ?? 'now')) ?></td>
                         <td>
-                            <form method="POST" action="/villes/delete/<?= $ville['id_ville'] ?>" onsubmit="return confirm('Supprimer cette ville ?');" style="display:inline">
+                            <form method="POST" action="<?= BASE_URL ?>/villes/delete/<?= $ville['id_ville'] ?>" onsubmit="return confirm('Supprimer cette ville ?');" style="display:inline">
                                 <button type="submit" class="btn btn-danger">Supprimer</button>
                             </form>
                         </td>

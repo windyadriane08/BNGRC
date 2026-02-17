@@ -41,12 +41,10 @@ class RecapController {
         $villes = $this->villeRepository->getAll();
         $recapParVille = [];
         
-        $totalBesoins = 0;
-        $totalSatisfaits = 0;
-        $totalRestants = 0;
-        $totalDons = 0;
-        $totalAttribues = 0;
-        $totalAchats = 0;
+        $totalBesoinsMontant = 0;
+        $totalSatisfaitsMontant = 0;
+        $totalRestantsMontant = 0;
+        $totalAchatsGlobal = 0;
         
         foreach ($villes as $ville) {
             $villeId = $ville['id_ville'];
@@ -54,13 +52,15 @@ class RecapController {
             
             // Besoins de cette ville
             $besoins = $this->besoinRepository->getByVille($villeId);
-            $villeBesoins = 0;
-            $villeSatisfaits = 0;
-            $villeRestants = 0;
+            $villeBesoinsMontant = 0;
+            $villeSatisfaitsMontant = 0;
+            $villeRestantsMontant = 0;
             
             foreach ($besoins as $besoin) {
                 $quantiteBesoin = $besoin['quantite'];
-                $villeBesoins += $quantiteBesoin;
+                $prixUnitaire = $besoin['prix_unitaire'];
+                $montantBesoin = $quantiteBesoin * $prixUnitaire;
+                $villeBesoinsMontant += $montantBesoin;
                 
                 // Attributions pour ce besoin
                 $attributions = $this->attributionRepository->getByBesoin($besoin['id_besoin']);
@@ -69,30 +69,18 @@ class RecapController {
                     $attribue += $attr['quantite_attribuee'];
                 }
                 
-                // Achats pour ce besoin
-                $achats = $this->achatRepository->getAchatsPourBesoin($besoin['id_besoin']);
-                $achete = 0;
-                foreach ($achats as $achat) {
-                    $achete += $achat['quantite_achetee'];
-                }
+                // Achats pour ce besoin (retourne directement le total en quantité)
+                $achete = $this->achatRepository->getAchatsPourBesoin($besoin['id_besoin']);
                 
                 $satisfait = $attribue + $achete;
-                $villeSatisfaits += min($satisfait, $quantiteBesoin);
-                $villeRestants += max(0, $quantiteBesoin - $satisfait);
+                $quantiteSatisfaite = min($satisfait, $quantiteBesoin);
+                $quantiteRestante = max(0, $quantiteBesoin - $satisfait);
+                
+                $villeSatisfaitsMontant += $quantiteSatisfaite * $prixUnitaire;
+                $villeRestantsMontant += $quantiteRestante * $prixUnitaire;
             }
             
-            // Dons de cette ville
-            $dons = $this->donRepository->getByVille($villeId);
-            $villeDons = 0;
-            $villeAttribues = 0;
-            
-            foreach ($dons as $don) {
-                $villeDons += $don['quantite'];
-                // Note: quantite_restante est calculée dans la vue SQL
-                $villeAttribues += ($don['quantite'] - ($don['quantite_restante'] ?? $don['quantite']));
-            }
-            
-            // Achats de cette ville (pour combler les besoins)
+            // Achats de cette ville (montant total)
             $achatsVille = $this->achatRepository->getAll($villeId);
             $villeAchats = 0;
             foreach ($achatsVille as $achat) {
@@ -102,36 +90,46 @@ class RecapController {
             $recapParVille[] = [
                 'id_ville' => $villeId,
                 'nom_ville' => $villeName,
-                'total_besoins' => $villeBesoins,
-                'total_satisfaits' => $villeSatisfaits,
-                'total_restants' => $villeRestants,
-                'pourcentage_couverture' => $villeBesoins > 0 ? round(($villeSatisfaits / $villeBesoins) * 100, 1) : 100,
-                'total_dons' => $villeDons,
-                'total_attribues' => $villeAttribues,
+                'total_besoins' => $villeBesoinsMontant,
+                'total_satisfaits' => $villeSatisfaitsMontant,
+                'total_restants' => $villeRestantsMontant,
+                'pourcentage_couverture' => $villeBesoinsMontant > 0 ? round(($villeSatisfaitsMontant / $villeBesoinsMontant) * 100, 1) : 100,
                 'total_achats' => $villeAchats
             ];
             
-            $totalBesoins += $villeBesoins;
-            $totalSatisfaits += $villeSatisfaits;
-            $totalRestants += $villeRestants;
-            $totalDons += $villeDons;
-            $totalAttribues += $villeAttribues;
-            $totalAchats += $villeAchats;
+            $totalBesoinsMontant += $villeBesoinsMontant;
+            $totalSatisfaitsMontant += $villeSatisfaitsMontant;
+            $totalRestantsMontant += $villeRestantsMontant;
+            $totalAchatsGlobal += $villeAchats;
+        }
+        
+        // Totaux globaux des dons
+        $dons = $this->donRepository->getAll();
+        $totalDons = 0;
+        foreach ($dons as $don) {
+            $totalDons += $don['quantite'];
         }
         
         // Argent disponible global
         $argentDisponible = $this->achatRepository->getArgentDisponible();
         
+        // Total attribué
+        $attributions = $this->attributionRepository->getAll();
+        $totalAttribues = 0;
+        foreach ($attributions as $attr) {
+            $totalAttribues += $attr['quantite_attribuee'];
+        }
+        
         return [
             'par_ville' => $recapParVille,
             'totaux' => [
-                'besoins' => $totalBesoins,
-                'satisfaits' => $totalSatisfaits,
-                'restants' => $totalRestants,
-                'pourcentage_couverture' => $totalBesoins > 0 ? round(($totalSatisfaits / $totalBesoins) * 100, 1) : 100,
+                'besoins' => $totalBesoinsMontant,
+                'satisfaits' => $totalSatisfaitsMontant,
+                'restants' => $totalRestantsMontant,
+                'pourcentage_couverture' => $totalBesoinsMontant > 0 ? round(($totalSatisfaitsMontant / $totalBesoinsMontant) * 100, 1) : 100,
                 'dons' => $totalDons,
                 'attribues' => $totalAttribues,
-                'achats' => $totalAchats,
+                'achats' => $totalAchatsGlobal,
                 'argent_disponible' => $argentDisponible
             ],
             'timestamp' => date('Y-m-d H:i:s')

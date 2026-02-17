@@ -18,31 +18,65 @@ class DispatchController {
         Flight::render('dispatch/index', $data);
     }
 
-    /**
-     * Simule le dispatch sans l'exécuter
-     * Affiche un aperçu des attributions qui seraient faites
-     */
-    public function simulate() {
+    public function simulate($mode = 1) {
         try {
-            $simulation = $this->dispatchService->simulerDispatch();
+            $mode = (int)$mode;
+            if ($mode === 3) {
+                $simulation = $this->dispatchService->simulerDispatchMode3();
+            } elseif ($mode === 2) {
+                $simulation = $this->dispatchService->simulerDispatchMode2();
+            } else {
+                $simulation = $this->dispatchService->simulerDispatch();
+                $simulation['mode'] = 1;
+                $simulation['mode_nom'] = 'FIFO';
+            }
             $data = $this->dispatchService->getResultatDispatch();
             $data['simulation'] = $simulation;
+            $data['current_mode'] = $mode;
             $data['success'] = null;
             $data['error'] = null;
             
             Flight::render('dispatch/index', $data);
         } catch (Exception $e) {
+            Flight::redirect(BASE_URL . '/dispatch?error=' . urlencode($e->getMessage()));
+        }
+    }
+
+    public function validate($mode = 1) {
+        try {
+            $mode = (int)$mode;
+            if ($mode === 3) {
+                $resultats = $this->dispatchService->dispatcherDonsMode3();
+                $modeName = 'Mode 3 (Proportionnel)';
+                // Calculer le reste total
+                $reste_total = 0;
+                foreach ($resultats as $type_result) {
+                    if (isset($type_result['reste'])) {
+                        $reste_total += $type_result['reste'];
+                    }
+                }
+                if ($reste_total > 0) {
+                    Flight::redirect('/dispatch?success=Dispatch ' . $modeName . ' validé avec succès&reste=' . $reste_total);
+                    return;
+                }
+            } elseif ($mode === 2) {
+                $resultats = $this->dispatchService->dispatcherDonsMode2();
+                $modeName = 'Mode 2 (Plus petits besoins)';
+            } else {
+                $resultats = $this->dispatchService->dispatcherDons();
+                $modeName = 'Mode 1 (FIFO)';
+            }
+            Flight::redirect('/dispatch?success=Dispatch ' . $modeName . ' validé avec succès');
+        } catch (Exception $e) {
             Flight::redirect('/dispatch?error=' . urlencode($e->getMessage()));
         }
     }
 
-    /**
-     * Valide et exécute le dispatch
-     */
-    public function validate() {
+    public function reset() {
         try {
-            $resultats = $this->dispatchService->dispatcherDons();
-            Flight::redirect('/dispatch?success=Dispatch validé avec succès : ' . count($resultats) . ' attribution(s) créée(s)');
+            $attributionRepo = new AttributionRepository();
+            $attributionRepo->resetAll();
+            Flight::redirect('/dispatch?success=Réinitialisation effectuée avec succès. Toutes les attributions et achats ont été supprimés.');
         } catch (Exception $e) {
             Flight::redirect('/dispatch?error=' . urlencode($e->getMessage()));
         }

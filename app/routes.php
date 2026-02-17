@@ -69,6 +69,10 @@ Flight::route('POST /besoins/store', function() {
     $controller = new BesoinController();
     $controller->store();
 });
+Flight::route('POST /besoins/delete/@id', function($id) {
+    $controller = new BesoinController();
+    $controller->delete($id);
+});
 
 // Gestion des dons
 Flight::route('GET /dons', function() {
@@ -83,19 +87,35 @@ Flight::route('POST /dons/store', function() {
     $controller = new DonController();
     $controller->store();
 });
+Flight::route('POST /dons/delete/@id', function($id) {
+    $controller = new DonController();
+    $controller->delete($id);
+});
 
 // Dispatch (simulation et validation)
 Flight::route('GET /dispatch', function() {
     $controller = new DispatchController();
     $controller->index();
 });
+Flight::route('POST /dispatch/simulate/@mode', function($mode) {
+    $controller = new DispatchController();
+    $controller->simulate($mode);
+});
 Flight::route('POST /dispatch/simulate', function() {
     $controller = new DispatchController();
-    $controller->simulate();
+    $controller->simulate(1);
+});
+Flight::route('POST /dispatch/validate/@mode', function($mode) {
+    $controller = new DispatchController();
+    $controller->validate($mode);
 });
 Flight::route('POST /dispatch/validate', function() {
     $controller = new DispatchController();
-    $controller->validate();
+    $controller->validate(1);
+});
+Flight::route('POST /dispatch/reset', function() {
+    $controller = new DispatchController();
+    $controller->reset();
 });
 
 // Gestion des achats

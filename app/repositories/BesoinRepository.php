@@ -86,4 +86,16 @@ class BesoinRepository {
         $stmt->execute([$nom, $categorie]);
         return $this->db->lastInsertId();
     }
+
+    public function delete($id) {
+        // Supprimer d'abord les attributions liées
+        $stmt = $this->db->prepare('DELETE FROM bngrc_attribution WHERE id_besoin = ?');
+        $stmt->execute([$id]);
+        // Supprimer les achats liés
+        $stmt = $this->db->prepare('DELETE FROM bngrc_achat WHERE id_besoin = ?');
+        $stmt->execute([$id]);
+        // Supprimer le besoin
+        $stmt = $this->db->prepare('DELETE FROM bngrc_besoin WHERE id_besoin = ?');
+        return $stmt->execute([$id]);
+    }
 }

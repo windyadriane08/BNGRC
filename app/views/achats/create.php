@@ -62,7 +62,7 @@
         <span>Formulaire d'achat</span>
     </div>
     <div class="card-body">
-        <form method="POST" action="/achats/store" id="achatForm">
+        <form method="POST" action="<?= BASE_URL ?>/achats/store" id="achatForm">
             <input type="hidden" name="id_besoin" value="<?php echo $besoin['id_besoin']; ?>">
             
             <div class="mb-3">
@@ -103,7 +103,7 @@
             
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary" id="submitBtn">Valider l'achat</button>
-                <a href="/achats" class="btn btn-secondary">Annuler</a>
+                <a href="<?= BASE_URL ?>/achats" class="btn btn-secondary">Annuler</a>
             </div>
         </form>
     </div>

@@ -3,7 +3,7 @@
 <div class="card form-card">
     <h2>Saisie des Dons des Donneurs</h2>
     
-    <form method="POST" action="/dons/store">
+    <form method="POST" action="<?= BASE_URL ?>/dons/store">
         <label for="type_id">Ressource *</label>
         <select id="type_id" name="type_id" required>
             <option value="">Sélectionner une ressource</option>
@@ -26,7 +26,7 @@
     </form>
     
     <p class="text-center mt-20">
-        <a href="/dons">← Retour à la liste</a>
+        <a href="<?= BASE_URL ?>/dons">← Retour à la liste</a>
     </p>
 </div>
 

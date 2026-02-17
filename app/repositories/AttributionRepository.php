@@ -45,4 +45,17 @@ class AttributionRepository {
         ');
         return $stmt->fetchAll();
     }
+
+    public function deleteAll() {
+        // Supprimer toutes les attributions
+        $stmt = $this->db->exec('DELETE FROM bngrc_attribution');
+        return true;
+    }
+
+    public function resetAll() {
+        // Supprimer toutes les attributions et achats
+        $this->db->exec('DELETE FROM bngrc_achat');
+        $this->db->exec('DELETE FROM bngrc_attribution');
+        return true;
+    }
 }

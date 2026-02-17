@@ -13,10 +13,36 @@
     <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
 <?php endif; ?>
 
+<!-- Filtre par ville -->
+<div class="card mb-4">
+    <div class="card-header">
+        <span>Filtrer par ville</span>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="<?= BASE_URL ?>/achats" class="d-flex gap-2 align-items-end">
+            <div class="flex-grow-1">
+                <label for="ville_id" class="form-label">Ville</label>
+                <select name="ville_id" id="ville_id" class="form-control">
+                    <option value="">Toutes les villes</option>
+                    <?php foreach ($villes as $ville): ?>
+                        <option value="<?php echo $ville['id_ville']; ?>" <?php echo ($ville_id_filter == $ville['id_ville']) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($ville['nom']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Filtrer</button>
+            <?php if ($ville_id_filter): ?>
+                <a href="<?= BASE_URL ?>/achats" class="btn btn-secondary">Réinitialiser</a>
+            <?php endif; ?>
+        </form>
+    </div>
+</div>
+
 <div class="card mb-4">
     <div class="card-header">
         <span>Argent disponible</span>
-        <a href="/achats/config" class="btn btn-sm btn-secondary">Configurer frais</a>
+        <a href="<?= BASE_URL ?>/achats/config" class="btn btn-sm btn-secondary">Configurer frais</a>
     </div>
     <div class="card-body">
         <div class="row">
@@ -65,7 +91,7 @@
                         <td><?php echo htmlspecialchars($besoin['ressource']); ?></td>
                         <td><?php echo $besoin['quantite_restante']; ?></td>
                         <td>
-                            <a href="/achats/create/<?php echo $besoin['id_besoin']; ?>" class="btn btn-sm btn-primary">
+                            <a href="<?= BASE_URL ?>/achats/create/<?php echo $besoin['id_besoin']; ?>" class="btn btn-sm btn-primary">
                                 Acheter
                             </a>
                         </td>

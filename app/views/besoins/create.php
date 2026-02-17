@@ -3,7 +3,7 @@
 <div class="card form-card">
     <h2>Saisie des Besoins des Sinistrés</h2>
     
-    <form method="POST" action="/besoins/store">
+    <form method="POST" action="<?= BASE_URL ?>/besoins/store">
         <label for="ville_id">Ville *</label>
         <select id="ville_id" name="ville_id" required>
             <option value="">Sélectionner une ville</option>
@@ -37,7 +37,7 @@
     </form>
     
     <p class="text-center mt-20">
-        <a href="/besoins">← Retour à la liste</a>
+        <a href="<?= BASE_URL ?>/besoins">← Retour à la liste</a>
     </p>
 </div>
 

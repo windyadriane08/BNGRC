@@ -62,8 +62,6 @@ function cls_invalid($errors, $field){ return ($errors[$field] ?? '') !== '' ? '
 
             <button class="btn btn-primary w-100" type="submit">S'inscrire</button>
           </form>
-
-          <script src="/flight-mvc-validation-skeleton/public/js/validation-ajax.js" defer></script>
         </div>
       </div>
     </div>

@@ -18,7 +18,7 @@
         <span>Frais d'achat</span>
     </div>
     <div class="card-body">
-        <form method="POST" action="/achats/config">
+        <form method="POST" action="<?= BASE_URL ?>/achats/config">
             <div class="mb-3">
                 <label for="frais_pct" class="form-label">Pourcentage de frais d'achat</label>
                 <div class="input-group" style="max-width: 200px;">
@@ -35,7 +35,7 @@
             
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary">Enregistrer</button>
-                <a href="/achats" class="btn btn-secondary">Retour</a>
+                <a href="<?= BASE_URL ?>/achats" class="btn btn-secondary">Retour</a>
             </div>
         </form>
     </div>

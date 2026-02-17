@@ -13,24 +13,24 @@
 </div>
 
 <div id="recapContent">
-    <!-- Totaux globaux -->
+    <!-- Totaux globaux en montants -->
     <div class="row mb-4">
         <div class="col-md-3">
             <div class="stat-card">
-                <div class="stat-value" id="totalBesoins"><?php echo $recap['totaux']['besoins']; ?></div>
-                <div class="stat-label">Total besoins</div>
+                <div class="stat-value" id="totalBesoins"><?php echo number_format($recap['totaux']['besoins'], 0, ',', ' '); ?> Ar</div>
+                <div class="stat-label">Besoins totaux (montant)</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="stat-card">
-                <div class="stat-value text-success" id="totalSatisfaits"><?php echo $recap['totaux']['satisfaits']; ?></div>
-                <div class="stat-label">Satisfaits</div>
+                <div class="stat-value text-success" id="totalSatisfaits"><?php echo number_format($recap['totaux']['satisfaits'], 0, ',', ' '); ?> Ar</div>
+                <div class="stat-label">Satisfaits (montant)</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="stat-card">
-                <div class="stat-value text-danger" id="totalRestants"><?php echo $recap['totaux']['restants']; ?></div>
-                <div class="stat-label">Restants</div>
+                <div class="stat-value text-danger" id="totalRestants"><?php echo number_format($recap['totaux']['restants'], 0, ',', ' '); ?> Ar</div>
+                <div class="stat-label">Restants (montant)</div>
             </div>
         </div>
         <div class="col-md-3">
@@ -45,13 +45,13 @@
         <div class="col-md-4">
             <div class="stat-card">
                 <div class="stat-value" id="totalDons"><?php echo $recap['totaux']['dons']; ?></div>
-                <div class="stat-label">Total dons reçus</div>
+                <div class="stat-label">Total dons reçus (quantité)</div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="stat-card">
                 <div class="stat-value text-success" id="totalAttribues"><?php echo $recap['totaux']['attribues']; ?></div>
-                <div class="stat-label">Dons attribués</div>
+                <div class="stat-label">Dons attribués (quantité)</div>
             </div>
         </div>
         <div class="col-md-4">
@@ -65,7 +65,7 @@
     <!-- Détail par ville -->
     <div class="card">
         <div class="card-header">
-            <span>Détail par ville</span>
+            <span>Détail par ville (en montants)</span>
             <small class="text-muted" id="lastUpdate">Dernière mise à jour: <?php echo $recap['timestamp']; ?></small>
         </div>
         <div class="card-body">
@@ -74,11 +74,10 @@
                     <thead>
                         <tr>
                             <th>Ville</th>
-                            <th class="text-center">Besoins</th>
-                            <th class="text-center">Satisfaits</th>
-                            <th class="text-center">Restants</th>
+                            <th class="text-center">Besoins (Ar)</th>
+                            <th class="text-center">Satisfaits (Ar)</th>
+                            <th class="text-center">Restants (Ar)</th>
                             <th class="text-center">Couverture</th>
-                            <th class="text-center">Dons reçus</th>
                             <th class="text-center">Achats</th>
                         </tr>
                     </thead>
@@ -86,9 +85,9 @@
                         <?php foreach ($recap['par_ville'] as $ville): ?>
                         <tr>
                             <td class="fw-bold"><?php echo htmlspecialchars($ville['nom_ville']); ?></td>
-                            <td class="text-center"><?php echo $ville['total_besoins']; ?></td>
-                            <td class="text-center text-success"><?php echo $ville['total_satisfaits']; ?></td>
-                            <td class="text-center text-danger"><?php echo $ville['total_restants']; ?></td>
+                            <td class="text-center"><?php echo number_format($ville['total_besoins'], 0, ',', ' '); ?></td>
+                            <td class="text-center text-success"><?php echo number_format($ville['total_satisfaits'], 0, ',', ' '); ?></td>
+                            <td class="text-center text-danger"><?php echo number_format($ville['total_restants'], 0, ',', ' '); ?></td>
                             <td class="text-center">
                                 <div class="progress" style="min-width: 80px;">
                                     <div class="progress-bar <?php echo $ville['pourcentage_couverture'] >= 100 ? 'bg-success' : ($ville['pourcentage_couverture'] >= 50 ? 'bg-warning' : 'bg-danger'); ?>" 
@@ -101,8 +100,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-center"><?php echo $ville['total_dons']; ?></td>
-                            <td class="text-center"><?php echo number_format($ville['total_achats'], 0, ',', ' '); ?> Ar</td>
+                            <td class="text-center"><?php echo number_format($ville['total_achats'], 0, ',', ' '); ?></td>
                         </tr>
                         <?php endforeach; ?>
                     </tbody>
@@ -130,13 +128,13 @@ document.getElementById('btnActualiser').addEventListener('click', function() {
     btn.disabled = true;
     icon.style.animation = 'spin 1s linear infinite';
     
-    fetch('/recap/data')
+    fetch('<?= BASE_URL ?>/recap/data')
         .then(response => response.json())
         .then(data => {
-            // Mise à jour des totaux
-            document.getElementById('totalBesoins').textContent = data.totaux.besoins;
-            document.getElementById('totalSatisfaits').textContent = data.totaux.satisfaits;
-            document.getElementById('totalRestants').textContent = data.totaux.restants;
+            // Mise à jour des totaux (en montants Ar)
+            document.getElementById('totalBesoins').textContent = formatNumber(data.totaux.besoins) + ' Ar';
+            document.getElementById('totalSatisfaits').textContent = formatNumber(data.totaux.satisfaits) + ' Ar';
+            document.getElementById('totalRestants').textContent = formatNumber(data.totaux.restants) + ' Ar';
             document.getElementById('pourcentageCouverture').textContent = data.totaux.pourcentage_couverture + '%';
             document.getElementById('totalDons').textContent = data.totaux.dons;
             document.getElementById('totalAttribues').textContent = data.totaux.attribues;
@@ -154,9 +152,9 @@ document.getElementById('btnActualiser').addEventListener('click', function() {
                 
                 tr.innerHTML = `
                     <td class="fw-bold">${escapeHtml(ville.nom_ville)}</td>
-                    <td class="text-center">${ville.total_besoins}</td>
-                    <td class="text-center text-success">${ville.total_satisfaits}</td>
-                    <td class="text-center text-danger">${ville.total_restants}</td>
+                    <td class="text-center">${formatNumber(ville.total_besoins)}</td>
+                    <td class="text-center text-success">${formatNumber(ville.total_satisfaits)}</td>
+                    <td class="text-center text-danger">${formatNumber(ville.total_restants)}</td>
                     <td class="text-center">
                         <div class="progress" style="min-width: 80px;">
                             <div class="progress-bar ${progressClass}" 
@@ -169,8 +167,7 @@ document.getElementById('btnActualiser').addEventListener('click', function() {
                             </div>
                         </div>
                     </td>
-                    <td class="text-center">${ville.total_dons}</td>
-                    <td class="text-center">${formatNumber(ville.total_achats)} Ar</td>
+                    <td class="text-center">${formatNumber(ville.total_achats)}</td>
                 `;
                 tbody.appendChild(tr);
             });

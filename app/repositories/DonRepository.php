@@ -43,9 +43,10 @@ class DonRepository {
 
     public function getDonsDisponibles($type_id = null) {
         $query = '
-            SELECT d.*, 
+            SELECT d.*, t.nom, t.categorie,
                    d.quantite - COALESCE(SUM(a.quantite_attribuee), 0) as quantite_restante
             FROM bngrc_don d
+            JOIN bngrc_type_ressource t ON d.id_type = t.id_type
             LEFT JOIN bngrc_attribution a ON d.id_don = a.id_don
         ';
         $params = [];
@@ -60,5 +61,14 @@ class DonRepository {
         $stmt = $this->db->prepare($query);
         $stmt->execute($params);
         return $stmt->fetchAll();
+    }
+
+    public function delete($id) {
+        // Supprimer d'abord les attributions liées
+        $stmt = $this->db->prepare('DELETE FROM bngrc_attribution WHERE id_don = ?');
+        $stmt->execute([$id]);
+        // Supprimer le don
+        $stmt = $this->db->prepare('DELETE FROM bngrc_don WHERE id_don = ?');
+        return $stmt->execute([$id]);
     }
 }

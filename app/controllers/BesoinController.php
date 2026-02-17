@@ -54,4 +54,14 @@ class BesoinController {
             Flight::redirect('/besoins/create?error=' . urlencode($e->getMessage()));
         }
     }
+
+    public function delete($id) {
+        try {
+            $besoinRepo = new BesoinRepository();
+            $besoinRepo->delete($id);
+            Flight::redirect('/besoins?success=Besoin supprimé avec succès');
+        } catch (Exception $e) {
+            Flight::redirect('/besoins?error=' . urlencode($e->getMessage()));
+        }
+    }
 }

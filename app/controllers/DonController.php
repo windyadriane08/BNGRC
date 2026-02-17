@@ -33,4 +33,14 @@ class DonController {
             Flight::redirect('/dons/create?error=' . urlencode($e->getMessage()));
         }
     }
+
+    public function delete($id) {
+        try {
+            $donRepo = new DonRepository();
+            $donRepo->delete($id);
+            Flight::redirect('/dons?success=Don supprimé avec succès');
+        } catch (Exception $e) {
+            Flight::redirect('/dons?error=' . urlencode($e->getMessage()));
+        }
+    }
 }
