@@ -18,6 +18,10 @@ class DispatchController {
         Flight::render('dispatch/index', $data);
     }
 
+    /**
+     * Simule le dispatch sans l'exécuter
+     * Affiche un aperçu des attributions qui seraient faites
+     */
     public function simulate($mode = 1) {
         try {
             $mode = (int)$mode;
@@ -38,16 +42,18 @@ class DispatchController {
             
             Flight::render('dispatch/index', $data);
         } catch (Exception $e) {
-            Flight::redirect(BASE_URL . '/dispatch?error=' . urlencode($e->getMessage()));
+            Flight::redirect('/dispatch?error=' . urlencode($e->getMessage()));
         }
     }
 
+    /**
+     * Valide et exécute le dispatch
+     */
     public function validate($mode = 1) {
         try {
             $mode = (int)$mode;
             if ($mode === 3) {
                 $resultats = $this->dispatchService->dispatcherDonsMode3();
-                $modeName = 'Mode 3 (Proportionnel)';
                 // Calculer le reste total
                 $reste_total = 0;
                 foreach ($resultats as $type_result) {
@@ -55,23 +61,23 @@ class DispatchController {
                         $reste_total += $type_result['reste'];
                     }
                 }
-                if ($reste_total > 0) {
-                    Flight::redirect('/dispatch?success=Dispatch ' . $modeName . ' validé avec succès&reste=' . $reste_total);
-                    return;
-                }
+                Flight::redirect('/dispatch?mode=3' . ($reste_total > 0 ? '&reste=' . $reste_total : ''));
+                return;
             } elseif ($mode === 2) {
                 $resultats = $this->dispatchService->dispatcherDonsMode2();
-                $modeName = 'Mode 2 (Plus petits besoins)';
+                Flight::redirect('/dispatch?mode=2');
             } else {
                 $resultats = $this->dispatchService->dispatcherDons();
-                $modeName = 'Mode 1 (FIFO)';
+                Flight::redirect('/dispatch?mode=1');
             }
-            Flight::redirect('/dispatch?success=Dispatch ' . $modeName . ' validé avec succès');
         } catch (Exception $e) {
             Flight::redirect('/dispatch?error=' . urlencode($e->getMessage()));
         }
     }
 
+    /**
+     * Réinitialise toutes les attributions et achats
+     */
     public function reset() {
         try {
             $attributionRepo = new AttributionRepository();
